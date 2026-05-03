@@ -13,3 +13,6 @@ yarn-error.log*
 .idea/
 *.log
 build/
+vite.config.js.timestamp-*
+*.css
+*.css.map
