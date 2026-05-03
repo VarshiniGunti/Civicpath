@@ -15,53 +15,46 @@ app.set('trust proxy', 1); // Trust first proxy (Cloud Run)
 const PORT = process.env.PORT || 8080;
 const API_KEY = process.env.GEMINI_API_KEY;
 
-if (!API_KEY) {
-  console.error('❌ GEMINI_API_KEY is not set in .env');
-  process.exit(1);
-}
-
-// 1. HTTP Security Headers
-app.use(helmet({
-  contentSecurityPolicy: false, // Vite requires inline scripts during dev, adjust for prod if needed
-  crossOriginEmbedderPolicy: false,
-}));
-
-// 2. CORS - Restrict origins in production
+// --- CORS & Rate Limiting (Applied to /api only) ---
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
     'https://votesathi-ai.web.app',
     'https://votesathi-ai.firebaseapp.com',
-    /\.run\.app$/, // Allow all Cloud Run service URLs
+    /\.run\.app$/,
   ]
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Allow same-origin / server-to-server
+    if (!origin) return callback(null, true);
     const allowed = allowedOrigins.some((o) =>
       o instanceof RegExp ? o.test(origin) : o === origin
     );
     if (allowed) {
       callback(null, true);
     } else {
+      console.warn(`CORS blocked for origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
-}));
+};
 
-// 3. Payload size limiting to prevent DoS attacks
-app.use(express.json({ limit: '5kb' }));
-
-// 4. Rate limiting for the API endpoint
 const chatLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute window
-  max: 15, // limit each IP to 15 requests per windowMs
+  windowMs: 60 * 1000,
+  max: 20,
   message: { error: 'Too many requests. Please wait a moment.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// Middleware configuration
+app.use(express.json({ limit: '10kb' }));
+
+// Apply security to API only
+app.use('/api', cors(corsOptions));
+app.use('/api', helmet({ contentSecurityPolicy: false }));
 
 // Gemini client
 const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -126,15 +119,12 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
   }
 });
 
-// Health check
-app.get('/api/health', (req, res) =>
-  res.json({ status: 'ok', model: 'gemini-1.5-flash', timestamp: new Date().toISOString() })
-);
+// Health check (moved up)
 
-// Serve Vite production build in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(join(__dirname, 'dist'), { maxAge: '1d' }));
-  app.get('*', (req, res) => res.sendFile(join(__dirname, 'dist', 'index.html')));
-}
+// Serve Vite production build
+app.use(express.static(join(__dirname, 'dist'), { maxAge: '1d' }));
+app.get('*', (req, res) => res.sendFile(join(__dirname, 'dist', 'index.html')));
 
-app.listen(PORT, () => console.log(`✅ CivicPath AI backend running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});

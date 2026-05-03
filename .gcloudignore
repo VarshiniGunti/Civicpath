@@ -1,0 +1,14 @@
+.gcloudignore
+.git
+.gitignore
+node_modules/
+src/
+public/
+tests/
+eslint.config.js
+vite.config.js
+.prettierrc
+# NO !dist/ here, we want it to be included by NOT being ignored
+# Actually, .gcloudignore works like .gitignore. 
+# Anything NOT in .gcloudignore is uploaded.
+# dist/ is NOT in this list, so it will be uploaded.
