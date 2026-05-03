@@ -11,7 +11,7 @@ I built **CivicPath AI** to replace confusing chatbots with a structured, step-b
 ## Tech Stack
 
 - **AI Engine:** Google Gemini 1.5 Flash
-- **Frontend:** React, Vite, and Tailwind CSS (Neumorphic Design)
+- **Frontend:** React, Vite, and Tailwind CSS
 - **Backend:** Node.js and Express
 - **Cloud:** Google Cloud Run and Docker
 
@@ -22,6 +22,14 @@ I built **CivicPath AI** to replace confusing chatbots with a structured, step-b
 - **Civic Quiz:** A quick knowledge check with tri-color progress tracking to test your election IQ.
 - **Voice Assistance:** Built-in support for speech-to-text and reading out guide chapters for better accessibility.
 - **Official Resources:** Verified, direct links to ECI and state-specific voter portals.
+
+## Technical Excellence
+
+- **Modular Architecture:** Refactored backend into separate Routes and Controllers for better maintainability and code quality.
+- **Robust Testing:** Integrated **Vitest** for comprehensive unit and integration testing of both AI controllers and frontend components.
+- **Accessibility (A11y):** Enhanced with ARIA-live regions, proper semantic HTML, and accessibility-first UI components to ensure inclusivity.
+- **Google Services Integration:** Deep integration with **Google Gemini 1.5 Flash** for intelligent grounding and context-aware civic guidance.
+- **Production-Ready Security:** Implemented rate limiting, Helmet security headers, CORS protection, and input sanitization (DOMPurify).
 
 ## Setup Instructions
 

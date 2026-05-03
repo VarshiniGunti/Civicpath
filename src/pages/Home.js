@@ -23,7 +23,7 @@ export function render() {
       <div id="chat-empty-state" class="chat-empty-state" style="min-height: calc(100vh - 60px); justify-content: center; position: relative;">
         <!-- Hero Background Image -->
         <div style="position: absolute; inset: 0; z-index: -1; overflow: hidden; opacity: 0.35; pointer-events: none;">
-          <img src="/hero-bg.png" alt="Hero Background" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6);" />
+          <img src="/hero-bg.png" alt="" aria-hidden="true" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6);" />
           <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, var(--color-bg));"></div>
         </div>
         
@@ -75,7 +75,7 @@ export function render() {
         <!-- Messages -->
         <div id="chat-messages" class="notranslate" style="flex:1;overflow-y:auto;padding:24px 0;">
           <div class="container" style="max-width:760px;">
-            <div style="display:flex;flex-direction:column;gap:16px;" id="msg-list"></div>
+            <div style="display:flex;flex-direction:column;gap:16px;" id="msg-list" aria-live="polite" aria-atomic="false"></div>
           </div>
         </div>
 

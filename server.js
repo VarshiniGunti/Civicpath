@@ -2,20 +2,22 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import { GoogleGenAI } from '@google/genai';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import chatRoute from './src/routes/chatRoute.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+/**
+ * Configure Express settings for production
+ */
 app.set('trust proxy', 1); // Trust first proxy (Cloud Run)
 const PORT = process.env.PORT || 8080;
-const API_KEY = process.env.GEMINI_API_KEY;
 
-// --- CORS & Rate Limiting (Applied to /api only) ---
+// --- CORS Configuration ---
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
     'https://votesathi-ai.web.app',
@@ -41,90 +43,45 @@ const corsOptions = {
   allowedHeaders: ['Content-Type']
 };
 
-const chatLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 20,
-  message: { error: 'Too many requests. Please wait a moment.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-// Middleware configuration
+/**
+ * Global Middleware
+ */
 app.use(express.json({ limit: '10kb' }));
 
-// Apply security to API only
+/**
+ * API Routes
+ */
 app.use('/api', cors(corsOptions));
 app.use('/api', helmet({ contentSecurityPolicy: false }));
 
-// Gemini client
-const ai = new GoogleGenAI({ apiKey: API_KEY });
-
-const SYSTEM_INSTRUCTION = `You are CivicPath AI, an expert guide on Indian elections and civic processes. Help citizens understand:
-- Lok Sabha, Rajya Sabha, Vidhan Sabha elections
-- Voter registration, EPIC cards, eligibility rules
-- ECI rules, Model Code of Conduct (MCC)
-- EVMs, VVPATs, NOTA, election phases and timelines
-- Voting rights, complaints, helpline 1950
-
-Rules:
-- Only answer Indian election and civic-related questions
-- Politely redirect off-topic questions back to elections/civics
-- Cite ECI sources when relevant (voters.eci.gov.in, eci.gov.in)
-- Keep answers VERY short, concise, and straight to the point
-- ALWAYS use bullet points for explanations
-- ALWAYS respond in the exact same language the user uses to ask the question
-- Stay strictly neutral on political parties and candidates
-- Never recommend any specific party or candidate`;
-
-// Chat endpoint
-app.post('/api/chat', chatLimiter, async (req, res) => {
-  try {
-    const { message, history = [] } = req.body;
-
-    if (!message?.trim()) return res.status(400).json({ error: 'Message is required' });
-    if (message.length > 1000)
-      return res.status(400).json({ error: 'Message too long (max 1000 chars)' });
-
-    const contents = [
-      ...history.slice(-10).map((h) => ({
-        role: h.role === 'model' ? 'model' : 'user',
-        parts: [{ text: h.text }],
-      })),
-      { role: 'user', parts: [{ text: message.trim() }] },
-    ];
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
-      contents,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        maxOutputTokens: 1024,
-        temperature: 0.4,
-      },
-    });
-
-    const reply = response.text;
-    if (!reply) throw new Error('Empty response from Gemini');
-
-    res.json({ reply });
-  } catch (err) {
-    console.error('Gemini error:', err.message);
-    if (err.message?.includes('quota') || err.message?.includes('RESOURCE_EXHAUSTED')) {
-      return res.status(503).json({ error: 'Service busy. Please try again shortly.' });
-    }
-    if (err.message?.includes('API_KEY') || err.message?.includes('INVALID')) {
-      return res.status(401).json({ error: 'API key error. Check your configuration.' });
-    }
-    res.status(500).json({ error: err.message || 'Something went wrong. Please try again.' });
-  }
+// Health Check Endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Health check (moved up)
+// Chat Route
+app.use('/api', chatRoute);
 
-// Serve Vite production build
+/**
+ * Static Asset Serving (Production)
+ */
 app.use(express.static(join(__dirname, 'dist'), { maxAge: '1d' }));
-app.get('*', (req, res) => res.sendFile(join(__dirname, 'dist', 'index.html')));
+
+// Catch-all route to serve the frontend
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, 'dist', 'index.html'));
+});
+
+/**
+ * Error Handling Middleware
+ */
+app.use((err, req, res, next) => {
+  console.error(`[Error] ${err.stack}`);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
 
 app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  console.log(`[CivicPath] Server running on port ${PORT}`);
+  console.log(`[CivicPath] Internal Health Check: http://localhost:${PORT}/api/health`);
 });
+
