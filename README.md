@@ -1,4 +1,4 @@
-# CivicPath AI — An Intelligent Guide for Indian Voters
+# CivicPath AI - An Intelligent Guide for Indian Voters
 
 A guided assistant that simplifies the election process for citizens across India.
 
