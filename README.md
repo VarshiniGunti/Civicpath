@@ -1,56 +1,44 @@
 # CivicPath AI
 
-A guided assistant that simplifies the election process for voters.
+A simple guide to help people understand how to vote in India.
 
-## Problem Statement
+## One-line Description
 
-The election process is often more complex than it needs to be. Voters struggle with fragmented information, unclear registration steps, and a lack of awareness about their specific rights. This confusion can lead to lower turnout and a sense of disconnection from the democratic process.
+A guided assistant that gives you a step-by-step path to get ready for election day.
 
-## Our Approach
+## Problem
 
-CivicPath AI is not a chatbot. It is a guided system designed to remove the guesswork from voting. By using a step-by-step assistant, we prioritize clarity and usability, walking users through their specific journey rather than leaving them to navigate a generic chat interface.
+Voting should be simple, but the rules are spread out across many different websites and documents. Many people, especially new voters, find it hard to know exactly how to register or what to do at the polling booth. Generic chatbots often give long, confusing answers that don't help much.
 
-## Key Features
+## What I Built
 
-- **Guided voting journey**: A clear, linear path through the election process.
-- **Context-aware flow**: Information that updates based on your location and voter status.
-- **Polling location assistance**: Simple tools to help you find where you need to go.
-- **Accessible UI**: A minimal design built for fast loading and easy navigation.
-- **Lightweight and fast**: Zero bloat, focused purely on getting users the right information.
-
-## How It Works
-
-The flow is simple:
-
-1. **Details**: User enters basic info (like location or voter type).
-2. **Processing**: The system identifies the specific steps required.
-3. **Guidance**: The assistant shows the exact next step in the journey.
+I built CivicPath AI to make the voting journey clear and easy to follow. It is **not a chatbot** where you just have a long conversation. Instead, it’s a guided flow that gives you a tailored roadmap based on your location and voter type. It gets straight to the point.
 
 ## Tech Stack
 
-- **Frontend**: Vanilla JS, Vite, Tailwind CSS
-- **Backend**: Node.js, Express
-- **AI**: Google Gemini API
+- **Frontend:** React and Tailwind CSS
+- **Backend:** Node.js and Express
+- **AI Engine:** Google Gemini 1.5 Flash
+- **Deployment:** Google Cloud Run
 
-## Why We Built This
+## How It Works
 
-This project was built for **Google Developers Prompt Wars** (Virtual Hackathon). Our focus was on real-world usability—building something that solves a practical problem through simplicity rather than adding unnecessary complexity.
+First, you choose your state and what kind of voter you are. The app then creates a simple 4-step path just for you. You can click through each step to find the right forms, check your ID requirements, and learn how the process works from start to finish.
 
-## Running the Project
+## Features
 
-1. **Install Dependencies**  
-   Run `npm install` in the root directory.
+- **Personalized Roadmap:** Shows you only the steps that apply to you.
+- **EVM Simulator:** An interactive tool to practice using a voting machine.
+- **Quick Quiz:** A simple way to check if you're ready to vote.
+- **Clean UI:** A simple, soft-color design that is easy to read.
 
-2. **Setup Environment**  
-   Create a `.env` file and add your `GEMINI_API_KEY`.
+## Setup
 
-3. **Start Development**  
-   Run `npm run dev` to start both the frontend and backend.
+1. **Clone the repo:** `git clone https://github.com/VarshiniGunti/Civicpath.git`
+2. **Install:** Run `npm install`
+3. **Environment:** Add your `GEMINI_API_KEY` to a `.env` file.
+4. **Run:** Use `npm run dev` to start it locally.
 
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:8080`
+## Built For
 
-## Notes
-
-- The assistant is designed to provide guidance based on current election guidelines.
-- Always verify your final polling details on official government portals.
+Built for the **Virtual Prompt Wars** hackathon by **Hack2Skill** and **Google for Developers**.
