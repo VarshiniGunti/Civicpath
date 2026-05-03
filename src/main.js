@@ -1,4 +1,6 @@
 // App entry point
+import './styles/tailwind.css';
+import './styles/animations.css';
 
 import { renderNavbar, initNavbar } from './components/Navbar.js';
 import { renderFooter } from './components/Footer.js';
