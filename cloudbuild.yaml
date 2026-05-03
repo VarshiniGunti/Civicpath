@@ -1,11 +1,11 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/votesathi-ai', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/civicpath-ai', '.']
   
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/votesathi-ai']
+    args: ['push', 'gcr.io/$PROJECT_ID/civicpath-ai']
   
   # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -13,9 +13,9 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'votesathi-ai'
+      - 'civicpath-ai'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/votesathi-ai'
+      - 'gcr.io/$PROJECT_ID/civicpath-ai'
       - '--region'
       - 'us-central1'
       - '--platform'
@@ -25,4 +25,4 @@ steps:
       - 'NODE_ENV=production'
 
 images:
-  - 'gcr.io/$PROJECT_ID/votesathi-ai'
+  - 'gcr.io/$PROJECT_ID/civicpath-ai'

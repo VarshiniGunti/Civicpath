@@ -101,7 +101,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
     ];
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       contents,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
@@ -128,7 +128,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) =>
-  res.json({ status: 'ok', model: 'gemini-2.5-flash', timestamp: new Date().toISOString() })
+  res.json({ status: 'ok', model: 'gemini-1.5-flash', timestamp: new Date().toISOString() })
 );
 
 // Serve Vite production build in production
